@@ -18,37 +18,37 @@ tipIds = [4, 8, 12, 16, 20]
 
 state = None
 
-# Define a function to count fingers
+# Definir una función para contar dedos
 def countFingers(image, hand_landmarks, handNo=0):
 
     global state
 
     if hand_landmarks:
-        # Get all Landmarks of the FIRST Hand VISIBLE
+        # Obtener todas las marcas de referencia en la primera mano visible
         landmarks = hand_landmarks[handNo].landmark
 
-        # Count Fingers        
+        # Contar dedos
         fingers = []
 
         for lm_index in tipIds:
-                # Get Finger Tip and Bottom y Position Value
+                # Obtener los valores de la psosición "y" de la punta y parte inferior del dedo
                 finger_tip_y = landmarks[lm_index].y 
                 finger_bottom_y = landmarks[lm_index - 2].y
 
-                # Check if ANY FINGER is OPEN or CLOSED
+                # Verificar si algún dedo está abierto o cerrado
                 if lm_index !=4:
                     if finger_tip_y < finger_bottom_y:
                         fingers.append(1)
-                        # print("FINGER with id ",lm_index," is Open")
+                        # print("El dedo con ID ",lm_index," está abierto.")
 
                     if finger_tip_y > finger_bottom_y:
                         fingers.append(0)
-                        # print("FINGER with id ",lm_index," is Closed")
+                        # print("El dedo con ID ",lm_index," está cerrado.")
 
         
         totalFingers = fingers.count(1)
         
-        # PLAY or PAUSE a Video
+        # Reproducir o pausar un video
         if totalFingers == 4:
             state = "Play"
 
@@ -56,23 +56,23 @@ def countFingers(image, hand_landmarks, handNo=0):
             state = "Pause"
             keyboard.press(Key.space)
 
-        # Move Video FORWARD & BACKWARDS    
+        # Mover un video hacia adelante o hacia atrás
         finger_tip_x = (landmarks[8].x)*width
  
         if totalFingers == 1:
             if  finger_tip_x < width-400:
-                print("Play Backward")
+                print("Regresar")
                 keyboard.press(Key.left)
 
             if finger_tip_x > width-50:
-                print("Play Forward")
+                print("Adelantar")
                 keyboard.press(Key.right)
         
         
-# Define a function to 
+# Definir una función para
 def drawHandLanmarks(image, hand_landmarks):
 
-    # Darw connections between landmark points
+    # Dibujar conexiones entre las marcas de referencia
     if hand_landmarks:
 
       for landmarks in hand_landmarks:
@@ -86,21 +86,21 @@ while True:
 
     image = cv2.flip(image, 1)
     
-    # Detect the Hands Landmarks 
+    # Detectar las marcas de referencia de las manos
     results = hands.process(image)
 
-    # Get landmark position from the processed result
+    # Obtener las marcas de referencia del resultado procesado
     hand_landmarks = results.multi_hand_landmarks
 
-    # Draw Landmarks
+    # Dibujar las marcas de referencia
     drawHandLanmarks(image, hand_landmarks)
 
-    # Get Hand Fingers Position        
+    # Obtener la posoción de los dedos de las manos
     countFingers(image, hand_landmarks)
 
-    cv2.imshow("Media Controller", image)
+    cv2.imshow("Controlador de medios", image)
 
-    # Quit the window on pressing Sapcebar key
+    # Cerrar la ventana al presionar la barra espaciadora
     key = cv2.waitKey(1)
     if key == 27:
         break
