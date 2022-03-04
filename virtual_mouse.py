@@ -22,24 +22,24 @@ tipIds = [4, 8, 12, 16, 20]
 
 pinch=False
 
-# Define a function to count fingers
+# Definir una función para contar dedos
 def countFingers(image, hand_landmarks, handNo=0):
 
 	global pinch
 
 	if hand_landmarks:
-		# Get all Landmarks of the FIRST Hand VISIBLE
+		# Obtener todas las marcas de referencia en la primera mano visible
 		landmarks = hand_landmarks[handNo].landmark
 
-		# Count Fingers        
+		# Contar dedos
 		fingers = []
 
 		for lm_index in tipIds:
-			# Get Finger Tip and Bottom y Position Value
+			# Obtener los valores de la psosición "y" de la punta y parte inferior del dedo
 			finger_tip_y = landmarks[lm_index].y 
 			finger_bottom_y = landmarks[lm_index - 2].y
 
-			# Check if ANY FINGER is OPEN or CLOSED
+			# Verificar si algun dedo está abierto o cerrado
 			if lm_index !=4:
 				if finger_tip_y < finger_bottom_y:
 					fingers.append(1)
@@ -50,9 +50,9 @@ def countFingers(image, hand_landmarks, handNo=0):
 
 		totalFingers = fingers.count(1)
 
-		# PINCH
+		# Pellizco
 
-		# Draw a LINE between FINGER TIP and THUMB TIP
+		# Dibujar una línea entre la punta del dedo y la punta del pulgar
 		finger_tip_x = int((landmarks[8].x)*width)
 		finger_tip_y = int((landmarks[8].y)*height)
 
@@ -61,27 +61,27 @@ def countFingers(image, hand_landmarks, handNo=0):
 
 		cv2.line(image, (finger_tip_x, finger_tip_y),(thumb_tip_x, thumb_tip_y),(255,0,0),2)
 
-		# Draw a CIRCLE on CENTER of the LINE between FINGER TIP and THUMB TIP
+		# Dibujar un círculo en el centro de la línea entre la punta del dedo y la punta del pulgar
 		center_x = int((finger_tip_x + thumb_tip_x )/2)
 		center_y = int((finger_tip_y + thumb_tip_y )/2)
 
 		cv2.circle(image, (center_x, center_y), 2, (0,0,255), 2)
 
-		# Calculate DISTANCE between FINGER TIP and THUMB TIP
+		# Calcular la distancia entre la punta del dedo y la punta del pulgar
 		distance = math.sqrt(((finger_tip_x - thumb_tip_x)**2) + ((finger_tip_y - thumb_tip_y)**2))
 
-		# print("Distance: ", distance)
+		# print("Distancia: ", distance)
 		
-		print("Computer Screen Size :",screen_width, screen_height, "Output Window size: ", width, height)
-		print("Mouse Position: ", mouse.position, "Tips Line Centre Position: ", center_x, center_y)
+		print("Tamaño de la pantalla de la computadora: ",screen_width, screen_height, " Tamaño de la ventana del output: ", width, height)
+		print("Posición del mouse: ", mouse.position, "Posición del centro de la línea de las puntas: ", center_x, center_y)
 
-		# Set Mouse Position on the Screen Relative to the Output Window Size	
+		# Establecer la posición del mouse en la pantalla relativa al tamaño de la ventana del output
 		relative_mouse_x = (center_x/width)*screen_width
 		relative_mouse_y = (center_y/height)*screen_height
 		
 		mouse.position = (relative_mouse_x, relative_mouse_y)
 
-		# Check PINCH Formation Conditions
+		# Verificar las condiciones de la formación del pellizco
 		if distance > 40:
 			if pinch == True:
 				pinch = False			
@@ -93,10 +93,10 @@ def countFingers(image, hand_landmarks, handNo=0):
 				mouse.press(Button.left)
 
 
-# Define a function to 
+# Definir una función para
 def drawHandLanmarks(image, hand_landmarks):
 
-    # Darw connections between landmark points
+    # Dibujar conexiones entre las marcas de referencia
     if hand_landmarks:
 
       for landmarks in hand_landmarks:
@@ -110,21 +110,21 @@ while True:
 	
 	image = cv2.flip(image, 1)
 
-	# Detect the Hands Landmarks 
+	# Detectar las marcas de referencia de las manos
 	results = hands.process(image)
 
-	# Get landmark position from the processed result
+	# Obtener las marcas de referencia del resultado procesado
 	hand_landmarks = results.multi_hand_landmarks
 
-	# Draw Landmarks
+	# Dibujar las marcas de referencia
 	drawHandLanmarks(image, hand_landmarks)
 
-	# Get Hand Fingers Position        
+	# Obtener la posoción de los dedos de las manos
 	countFingers(image, hand_landmarks)
 
-	cv2.imshow("Media Controller", image)
+	cv2.imshow("Controlador de medios", image)
 
-	# Quit the window on pressing Sapcebar key
+	# Cerrar la ventana al presionar la barra espaciadora
 	key = cv2.waitKey(1)
 	if key == 27:
 		break
